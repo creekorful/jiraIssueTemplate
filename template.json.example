@@ -1,0 +1,17 @@
+{
+  "project": "XXX",
+  "task": {
+    "summary": "Parent task",
+    "description": "Parent task description",
+    "tasks": [
+      {
+        "summary": "Sub-task #1",
+        "description": "..."
+      },
+      {
+        "summary": "Sub-task #2",
+        "description": "..."
+      }
+    ]
+  }
+}
