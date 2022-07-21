@@ -27,10 +27,10 @@ def main(template: str, config: str):
     for task in sub_tasks:
         fields = task
         fields['project'] = {'key': template['project']}
-        fields['issuetype'] = {'name': 'Subtask'}
+        fields['issuetype'] = {'name': 'Sub-task'}
         fields['parent'] = {'key': parent.key}
 
-        jira.create_issue(fields=fields)
+        jira.create_issue(fields)
 
     print("Successfully created issue #{} ({}) and the {} linked sub-tasks.".format(parent.key, parent.fields.summary,
                                                                                     len(sub_tasks)))
