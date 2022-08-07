@@ -16,9 +16,13 @@ def main(template: str, config: str):
 
     jira = JIRA(server=config['server'], basic_auth=(config['username'], config['password']))
 
+    issue_types = jira.project(template['project']).raw['issueTypes']
+    task_type = list(filter(lambda t: t['name'] == 'Task', issue_types))[0]
+    subtask_type = list(filter(lambda t: t['subtask'], issue_types))[0]
+
     task = template['task']
     task['project'] = {'key': template['project']}
-    task['issuetype'] = {'name': 'Task'}
+    task['issuetype'] = task_type
 
     sub_tasks = task.pop('tasks', [])
 
@@ -27,7 +31,7 @@ def main(template: str, config: str):
     for task in sub_tasks:
         fields = task
         fields['project'] = {'key': template['project']}
-        fields['issuetype'] = {'name': 'Sub-task'}
+        fields['issuetype'] = subtask_type
         fields['parent'] = {'key': parent.key}
 
         jira.create_issue(fields)
