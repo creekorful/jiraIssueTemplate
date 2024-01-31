@@ -25,22 +25,23 @@ def main(template: str, config: str):
     if task.get('epic_name') is not None:
         epic_type = list(filter(lambda t: t['name'] == 'Epic', issue_types))[0]
 
-        fields = task
-        fields['project'] = {'key': template['project']}
-        fields['issuetype'] = epic_type
-
-        parent = jira.create_issue(fields)
+        parent = jira.create_issue({
+            'summary': task.get('epic_name'),
+            'description': '',
+            'project': {'key': template['project']},
+            'issuetype': epic_type,
+        })
 
         task['parent'] = {'key': parent.key}
 
-    task['project'] = {'key': template['project']}
-    task['issuetype'] = task_type
+    parent = jira.create_issue({
+        'summary': task['summary'],
+        'description': task['description'],
+        'project': {'key': template['project']},
+        'issuetype': task_type,
+    })
 
-    sub_tasks = task.pop('tasks', [])
-
-    parent = jira.create_issue(task)
-
-    for task in sub_tasks:
+    for task in task.get('tasks', []):
         fields = task
         fields['project'] = {'key': template['project']}
         fields['issuetype'] = subtask_type
@@ -48,8 +49,7 @@ def main(template: str, config: str):
 
         jira.create_issue(fields)
 
-    print("Successfully created issue #{} ({}) and the {} linked sub-tasks.".format(parent.key, parent.fields.summary,
-                                                                                    len(sub_tasks)))
+    print("Successfully created issue #{} ({}) and the {} linked sub-tasks.".format(parent.key, parent.fields.summary, len(task.get('tasks', []))))
 
 
 if __name__ == '__main__':
