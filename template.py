@@ -21,12 +21,24 @@ def main(template: str, config: str):
     subtask_type = list(filter(lambda t: t['subtask'], issue_types))[0]
 
     task = template['task']
+
+    if task.get('epic_name') is not None:
+        epic_type = list(filter(lambda t: t['name'] == 'Epic', issue_types))[0]
+
+        fields = task
+        fields['project'] = {'key': template['project']}
+        fields['issuetype'] = epic_type
+
+        parent = jira.create_issue(fields)
+
+        task['parent'] = {'key': parent.key}
+
     task['project'] = {'key': template['project']}
     task['issuetype'] = task_type
 
     sub_tasks = task.pop('tasks', [])
 
-    parent = jira.create_issue(template['task'])
+    parent = jira.create_issue(task)
 
     for task in sub_tasks:
         fields = task

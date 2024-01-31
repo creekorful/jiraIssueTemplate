@@ -3,6 +3,7 @@
   "task": {
     "summary": "Parent task",
     "description": "Parent task description",
+    "epic_name": null,
     "tasks": [
       {
         "summary": "Sub-task #1",
