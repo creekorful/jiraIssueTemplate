@@ -34,12 +34,17 @@ def main(template: str, config: str):
 
         task['parent'] = {'key': parent.key}
 
-    parent = jira.create_issue({
+    fields = {
         'summary': task['summary'],
         'description': task['description'],
         'project': {'key': template['project']},
         'issuetype': task_type,
-    })
+    }
+
+    if task.get('parent') is not None:
+        fields['parent'] = task.get('parent')
+
+    parent = jira.create_issue(fields)
 
     for task in task.get('tasks', []):
         fields = task
@@ -49,7 +54,8 @@ def main(template: str, config: str):
 
         jira.create_issue(fields)
 
-    print("Successfully created issue #{} ({}) and the {} linked sub-tasks.".format(parent.key, parent.fields.summary, len(task.get('tasks', []))))
+    print("Successfully created issue #{} ({}) and the {} linked sub-tasks.".format(parent.key, parent.fields.summary,
+                                                                                    len(task.get('tasks', []))))
 
 
 if __name__ == '__main__':
